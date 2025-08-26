@@ -58,6 +58,7 @@ QUERY_ENGAGEMENTS = gql(
             engagements (filter: { employee: { uuids: $uuid, from_date: null, to_date: null }} ){
                 objects {
                     validities {
+                        org_unit_uuid
                         validity{
                             from
                             to
@@ -229,11 +230,10 @@ QUERY_LEDER_ORG_UNITS = gql(
                     validities {
                         uuid
                         name
-                        has_children
                         associations {
                             uuid
-                            org_unit_uuid
                             employee_uuid
+                            org_unit_uuid
                             association_type_uuid
                             validity {
                                 from
@@ -251,4 +251,20 @@ QUERY_LEDER_ORG_UNITS = gql(
             }
         }
 """
+)
+
+QUERY_CURRENT_MANAGERS = gql(
+    """
+        query {
+            managers {
+                objects {
+                    current {
+                        uuid
+                        employee_uuid
+                        org_unit_uuid
+                    }
+                }
+            }
+        }
+    """
 )

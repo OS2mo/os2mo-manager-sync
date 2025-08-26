@@ -12,6 +12,7 @@ from raclients.graph.client import PersistentGraphQLClient  # type: ignore
 
 from .config import get_settings
 from .config import Settings
+from .holstebro_managers import reconcile_leder_managers  # type: ignore
 from .holstebro_managers import update_mo_managers  # type: ignore
 from .init import create_missing_manager_levels
 from .log import setup_logging
@@ -92,9 +93,6 @@ def create_app(*args: Any, **kwargs: Any) -> FastAPI:
     async def run_update() -> None:
         """Starts update process of managers"""
         gql_client = context["gql_client"]
-        root_uuid = context["root_uuid"]
-        await update_mo_managers(
-            gql_client=gql_client, org_unit_uuid=root_uuid, root_uuid=root_uuid
-        )
+        await reconcile_leder_managers(gql_client=gql_client)
 
     return app
