@@ -1,14 +1,8 @@
 # SPDX-FileCopyrightText: Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 
-query GetOrganization {
-  org {
-    uuid
-  }
-}
-
-query RootManagerEngagements($uuid: [UUID!]!){
-    org_units (filter: { uuids: $uuid }){
+query RootManagerEngagements($uuid: UUID!){
+    org_units (filter: { uuids: [$uuid] }){
         objects {
             validities {
                 uuid
@@ -37,8 +31,8 @@ query RootManagerEngagements($uuid: [UUID!]!){
     }
 }
 
-query ManagerEngagements($uuid: [UUID!]!){
-    org_units (filter: { parent: { uuids: $uuid } }){
+query ManagerEngagements($uuid: UUID!){
+    org_units (filter: { parent: { uuids: [$uuid] } }){
         objects {
             validities {
                 uuid
@@ -67,6 +61,59 @@ query ManagerEngagements($uuid: [UUID!]!){
     }
 }
 
+query LederOrgUnits {
+    org_units(filter: { query: "_leder" }) {
+        objects {
+            validities {
+                uuid
+                name
+                associations {
+                    uuid
+                    employee_uuid
+                    org_unit_uuid
+                    association_type_uuid
+                    validity {
+                        from
+                        to
+                    }
+                }
+                parent {
+                    uuid
+                    name
+                    parent_uuid
+                    org_unit_level_uuid
+                }
+            }
+        }
+    }
+}
+
+query Engagements($uuid: UUID!){
+    engagements (filter: { employee: { uuids: [$uuid], from_date: null, to_date: null }} ){
+        objects {
+            validities {
+                org_unit_uuid
+                validity{
+                    from
+                    to
+                }
+            }
+        }
+    }
+}
+
+query CurrentManagers{
+    managers {
+        objects {
+            current {
+                uuid
+                employee_uuid
+                org_unit_uuid
+            }
+        }
+    }
+}
+
 mutation CreateManager($input: ManagerCreateInput!) {
     manager_create(input: $input) {
         uuid
@@ -75,6 +122,18 @@ mutation CreateManager($input: ManagerCreateInput!) {
 
 mutation UpdateManager($input: ManagerUpdateInput!) {
     manager_update(input: $input) {
+        uuid
+    }
+}
+
+mutation TerminateManager($input: ManagerTerminateInput!){
+    manager_terminate(input: $input){
+        uuid
+    }
+}
+
+mutation TerminateAssociation($input: AssociationTerminateInput!){
+    association_terminate(input: $input){
         uuid
     }
 }
