@@ -2,26 +2,30 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-version: "3.10"
 services:
   sd_managerscript:
-    build: .
-    command:
-      [
-        "uvicorn",
-        "--factory",
-        "app.main:create_app",
-        "--host",
-        "0.0.0.0",
-        "--reload"
-      ]
+    build:
+      context: .
     environment:
+      ENVIRONMENT: "development"
 
-      AUTH_SERVER: "http://keycloak:8080/auth"
+      FASTRAMQPI__LOG_LEVEL: "DEBUG"
+      FASTRAMQPI__JSON_LOGS: "true"
 
-      MO_URL: "http://mo:5000"
-      CLIENT_ID: "dipex"
-      CLIENT_SECRET: "603f1c82-d012-4d04-9382-dbe659c533fb"
+      # OS2mo
+      FASTRAMQPI__MO_URL: "http://mo:5000"
+      FASTRAMQPI__CLIENT_ID: "dipex"
+      FASTRAMQPI__CLIENT_SECRET: "603f1c82-d012-4d04-9382-dbe659c533fb"
+      FASTRAMQPI__AUTH_SERVER: "http://keycloak:8080/auth"
+      FASTRAMQPI__AUTH_REALM: "mo"
+      FASTRAMQPI__AMQP__URL: "amqp://guest:guest@msg-broker:5672/"
+      # Database
+      FASTRAMQPI__DATABASE__USER: "fastramqpi"
+      FASTRAMQPI__DATABASE__PASSWORD: "fastramqpi"
+      FASTRAMQPI__DATABASE__HOST: "db"
+      FASTRAMQPI__DATABASE__NAME: "fastramqpi"
+
+      # Manager sync
       ROOT_UUID: "f06ee470-9f17-566f-acbe-e938112d46d9"
       MANAGER_TYPE_UUID: "83b47e9e-de81-432e-bf0b-4ad95cd18589"
       RESPONSIBILITY_UUID: "82188ee7-a5da-4f3c-bf52-434d9ce57a65"
@@ -35,33 +39,11 @@ services:
         "53350314-820e-4bcc-a286-b0c1bb7738e9": "e226821b-4af3-1e91-c53f-ea5c57c6d8d0",
         "418b313a-979f-4a26-807e-ba8dd3114d74": "b352fff5-c6ef-4efa-b9fc-7e738bee6b9f"
       }'
-      MANAGER_LEVEL_CREATE: '[
-            {
-                "uuid": "b352fff5-c6ef-4efa-b9fc-7e738bee6b9f",
-                "name": "Kommunal Direktør",
-                "user_key": "manager_municipality_director"
-            },
-            {
-                "uuid": "e226821b-4af3-1e91-c53f-ea5c57c6d8d0",
-                "name": "Direktør",
-                "user_key": "manager_1030"
-            },
-            {
-                "uuid": "a8754726-a4b9-1715-6b41-769c6fe703c5",
-                "name": "Chef",
-                "user_key": "manager_1035"
-            },
-            {
-                "uuid": "9ffaff0f-8b6e-6e99-a517-f841a04c61c2",
-                "name": "Leder",
-                "user_key": "manager_1040"
-            }
-        ]'
-      LOG_LEVEL: DEBUG
-    networks:
-      - os2mo_default
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
+    networks:
+      - default
+      - os2mo_default
     volumes:
       - ./sd_managerscript:/opt/app/
 
