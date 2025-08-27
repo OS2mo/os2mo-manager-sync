@@ -22,6 +22,9 @@ class ManagerSyncSettings(BaseSettings):
         description="Mapping dict from org-unit level to manager level"
     )
 
+    class Config:
+        env_nested_delimiter = "__"
+
 
 def get_settings(*args, **kwargs) -> ManagerSyncSettings:
     return ManagerSyncSettings(*args, **kwargs)
