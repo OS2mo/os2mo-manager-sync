@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+
+query GetOrganization {
+  org {
+    uuid
+  }
+}
+
+query RootManagerEngagements($uuid: [UUID!]!){
+    org_units (filter: { uuids: $uuid }){
+        objects {
+            validities {
+                uuid
+                has_children
+                managers {
+                    uuid
+                    employee {
+                        engagements {
+                            org_unit {
+                                name
+                                uuid
+                                parent {
+                                    name
+                                    uuid
+                                }
+                            }
+                            validity {
+                                from
+                                to
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query ManagerEngagements($uuid: [UUID!]!){
+    org_units (filter: { parent: { uuids: $uuid } }){
+        objects {
+            validities {
+                uuid
+                has_children
+                managers{
+                    uuid
+                    employee {
+                        engagements {
+                            org_unit {
+                                name
+                                uuid
+                                parent {
+                                    name
+                                    uuid
+                                }
+                            }
+                            validity {
+                                from
+                                to
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+mutation CreateManager($input: ManagerCreateInput!) {
+    manager_create(input: $input) {
+        uuid
+    }
+}
+
+mutation UpdateManager($input: ManagerUpdateInput!) {
+    manager_update(input: $input) {
+        uuid
+    }
+}
