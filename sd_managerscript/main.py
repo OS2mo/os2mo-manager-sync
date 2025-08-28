@@ -33,8 +33,8 @@ def create_fastramqpi() -> FastRAMQPI:
     fastramqpi = FastRAMQPI(
         application_name="os2mo-manager-sync",
         settings=settings.fastramqpi,
-        graphql_version=25,
         graphql_client_cls=GraphQLClient,
+        graphql_version=25,
     )
     fastramqpi.add_context(settings=settings)
 
@@ -56,7 +56,7 @@ def create_fastramqpi() -> FastRAMQPI:
     @fastapi_router.post("/trigger/all", status_code=HTTP_202_ACCEPTED)
     async def run_update(gql_client: depends.GraphQLClient) -> None:
         """Starts update process of managers"""
-        await reconcile_leder_managers(mo=fastramqpi.graphql_client_cls)
+        await reconcile_leder_managers(mo=gql_client)
 
     app = fastramqpi.get_app()
     app.include_router(fastapi_router)

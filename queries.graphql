@@ -114,6 +114,22 @@ query CurrentManagers{
     }
 }
 
+query OrgUnitLevel($uuids: UUID!) {
+    org_units (filter: {uuids: [$uuids]}) {
+        objects {
+            validities {
+                uuid
+                name
+                org_unit_level_uuid
+                parent {
+                    uuid
+                    org_unit_level_uuid
+                }
+            }
+        }
+    }
+}
+
 mutation CreateManager($input: ManagerCreateInput!) {
     manager_create(input: $input) {
         uuid
