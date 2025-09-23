@@ -4,10 +4,12 @@
 
 FROM python:3.11.2
 
+WORKDIR /app
+
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
-    POETRY_VERSION="1.5.1" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    POETRY_VERSION="1.7" \
     POETRY_HOME=/opt/poetry \
     VIRTUAL_ENV="/venv"
 ENV PATH="$VIRTUAL_ENV/bin:$POETRY_HOME/bin:$PATH"
@@ -17,12 +19,9 @@ RUN python -m venv $POETRY_HOME \
     && pip install --no-cache-dir poetry==${POETRY_VERSION}
 
 # Install project in another isolated environment
-WORKDIR /opt
 RUN python -m venv $VIRTUAL_ENV
-COPY poetry.lock pyproject.toml ./
-RUN poetry install --no-root --only=main
+COPY pyproject.toml poetry.lock* ./
+RUN poetry install --no-root
 
-WORKDIR /opt/app
-COPY sd_managerscript .
-WORKDIR /opt/
-CMD [ "uvicorn", "--factory", "app.main:create_app", "--host", "0.0.0.0" ]
+COPY sd_managerscript ./sd_managerscript
+CMD [ "uvicorn", "--factory", "sd_managerscript.main:create_app", "--host", "0.0.0.0" ]

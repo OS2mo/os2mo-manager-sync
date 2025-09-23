@@ -2,15 +2,13 @@
 # SPDX-License-Identifier: MPL-2.0
 from uuid import UUID
 
-from fastramqpi.config import Settings as FastRAMQPISettings
+from fastramqpi.config import Settings as FastRAMQPISettings  # type: ignore
 from pydantic import BaseSettings
 from pydantic import Field
 
 
-class ManagerSyncSettings(BaseSettings):
-    fastramqpi: FastRAMQPISettings = Field(
-        default_factory=FastRAMQPISettings, description="FastRAMQPI settings"
-    )
+class _Settings(BaseSettings):
+    fastramqpi: FastRAMQPISettings
     root_uuid: UUID = Field(description="UUID of the root org-unit")
     manager_type_uuid: UUID = Field(
         description="UUID defining manager type. Same for all managers"
@@ -24,7 +22,3 @@ class ManagerSyncSettings(BaseSettings):
 
     class Config:
         env_nested_delimiter = "__"
-
-
-def get_settings(*args, **kwargs) -> ManagerSyncSettings:
-    return ManagerSyncSettings(*args, **kwargs)
