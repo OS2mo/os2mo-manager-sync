@@ -153,3 +153,108 @@ mutation TerminateAssociation($input: AssociationTerminateInput!){
         uuid
     }
 }
+
+query _Testing_GetOrgUnitType {
+  classes(filter: {facet_user_keys: "org_unit_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetOrgUnitLevel {
+  classes(filter: {facet_user_keys: "org_unit_level"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetAssociationType {
+  classes(filter: {facet_user_keys: "association_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetEngagementType {
+  facets(filter: {user_keys: "engagement_type"}) {
+    objects {
+      current {
+        classes {
+          uuid
+        }
+      }
+    }
+  }
+}
+
+query _Testing_GetManagerLevel {
+  classes(filter: {facet_user_keys: "manager_level"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetJobFunction {
+  facets(filter: {user_keys: "engagement_job_function"}) {
+    objects {
+      current {
+        classes {
+          uuid
+          user_key
+        }
+      }
+    }
+  }
+}
+
+mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
+  org_unit_create(
+    input: {
+      name: $name,
+      parent: $parent,
+      org_unit_type: $org_unit_type,
+      org_unit_level: $org_unit_level,
+      validity: {from: "2010-02-03"},
+    },
+  ) {
+    uuid
+    current {
+      org_unit_level_uuid
+    }
+  }
+}
+
+mutation _Testing_CreateEmployee($first_name: String!, $last_name: String!) {
+  employee_create(input: {given_name: $first_name, surname: $last_name}) {
+    uuid
+  }
+}
+
+mutation _Testing_CreateAssociation(
+  $org_unit: UUID!
+  $person: UUID!
+  $association_type: UUID!
+) {
+  association_create(
+    input: {
+      validity: { from: "2010-02-03" }
+      org_unit: $org_unit
+      association_type: $association_type
+      person: $person
+    }
+  ) {
+    uuid
+  }
+}
+
+mutation _Testing_CreateEngagement($orgunit: UUID!, $person: UUID!, $engagement_type: UUID!, $job_function: UUID!) {
+  engagement_create(
+    input: {org_unit: $orgunit, engagement_type: $engagement_type, job_function: $job_function, person: $person, validity: {from: "2016-05-05"}}
+  ) {
+    uuid
+  }
+}

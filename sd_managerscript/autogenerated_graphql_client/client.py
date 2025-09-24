@@ -1,6 +1,28 @@
 from uuid import UUID
 
+from ._testing__create_association import TestingCreateAssociation
+from ._testing__create_association import TestingCreateAssociationAssociationCreate
+from ._testing__create_employee import TestingCreateEmployee
+from ._testing__create_employee import TestingCreateEmployeeEmployeeCreate
+from ._testing__create_engagement import TestingCreateEngagement
+from ._testing__create_engagement import TestingCreateEngagementEngagementCreate
+from ._testing__create_org_unit import TestingCreateOrgUnit
+from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreate
+from ._testing__get_association_type import TestingGetAssociationType
+from ._testing__get_association_type import TestingGetAssociationTypeClasses
+from ._testing__get_engagement_type import TestingGetEngagementType
+from ._testing__get_engagement_type import TestingGetEngagementTypeFacets
+from ._testing__get_job_function import TestingGetJobFunction
+from ._testing__get_job_function import TestingGetJobFunctionFacets
+from ._testing__get_manager_level import TestingGetManagerLevel
+from ._testing__get_manager_level import TestingGetManagerLevelClasses
+from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
+from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
+from ._testing__get_org_unit_type import TestingGetOrgUnitType
+from ._testing__get_org_unit_type import TestingGetOrgUnitTypeClasses
 from .async_base_client import AsyncBaseClient
+from .base_model import UNSET
+from .base_model import UnsetType
 from .create_manager import CreateManager
 from .create_manager import CreateManagerManagerCreate
 from .current_managers import CurrentManagers
@@ -286,3 +308,212 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TerminateAssociation.parse_obj(data).association_terminate
+
+    async def _testing__get_org_unit_type(self) -> TestingGetOrgUnitTypeClasses:
+        query = gql(
+            """
+            query _Testing_GetOrgUnitType {
+              classes(filter: {facet_user_keys: "org_unit_type"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetOrgUnitType.parse_obj(data).classes
+
+    async def _testing__get_org_unit_level(self) -> TestingGetOrgUnitLevelClasses:
+        query = gql(
+            """
+            query _Testing_GetOrgUnitLevel {
+              classes(filter: {facet_user_keys: "org_unit_level"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetOrgUnitLevel.parse_obj(data).classes
+
+    async def _testing__get_association_type(self) -> TestingGetAssociationTypeClasses:
+        query = gql(
+            """
+            query _Testing_GetAssociationType {
+              classes(filter: {facet_user_keys: "association_type"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetAssociationType.parse_obj(data).classes
+
+    async def _testing__get_engagement_type(self) -> TestingGetEngagementTypeFacets:
+        query = gql(
+            """
+            query _Testing_GetEngagementType {
+              facets(filter: {user_keys: "engagement_type"}) {
+                objects {
+                  current {
+                    classes {
+                      uuid
+                    }
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetEngagementType.parse_obj(data).facets
+
+    async def _testing__get_manager_level(self) -> TestingGetManagerLevelClasses:
+        query = gql(
+            """
+            query _Testing_GetManagerLevel {
+              classes(filter: {facet_user_keys: "manager_level"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetManagerLevel.parse_obj(data).classes
+
+    async def _testing__get_job_function(self) -> TestingGetJobFunctionFacets:
+        query = gql(
+            """
+            query _Testing_GetJobFunction {
+              facets(filter: {user_keys: "engagement_job_function"}) {
+                objects {
+                  current {
+                    classes {
+                      uuid
+                      user_key
+                    }
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetJobFunction.parse_obj(data).facets
+
+    async def _testing__create_org_unit(
+        self,
+        name: str,
+        org_unit_type: UUID,
+        parent: UUID | None | UnsetType = UNSET,
+        org_unit_level: UUID | None | UnsetType = UNSET,
+    ) -> TestingCreateOrgUnitOrgUnitCreate:
+        query = gql(
+            """
+            mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
+              org_unit_create(
+                input: {name: $name, parent: $parent, org_unit_type: $org_unit_type, org_unit_level: $org_unit_level, validity: {from: "2010-02-03"}}
+              ) {
+                uuid
+                current {
+                  org_unit_level_uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {
+            "name": name,
+            "parent": parent,
+            "org_unit_type": org_unit_type,
+            "org_unit_level": org_unit_level,
+        }
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingCreateOrgUnit.parse_obj(data).org_unit_create
+
+    async def _testing__create_employee(
+        self, first_name: str, last_name: str
+    ) -> TestingCreateEmployeeEmployeeCreate:
+        query = gql(
+            """
+            mutation _Testing_CreateEmployee($first_name: String!, $last_name: String!) {
+              employee_create(input: {given_name: $first_name, surname: $last_name}) {
+                uuid
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {
+            "first_name": first_name,
+            "last_name": last_name,
+        }
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingCreateEmployee.parse_obj(data).employee_create
+
+    async def _testing__create_association(
+        self, org_unit: UUID, person: UUID, association_type: UUID
+    ) -> TestingCreateAssociationAssociationCreate:
+        query = gql(
+            """
+            mutation _Testing_CreateAssociation($org_unit: UUID!, $person: UUID!, $association_type: UUID!) {
+              association_create(
+                input: {validity: {from: "2010-02-03"}, org_unit: $org_unit, association_type: $association_type, person: $person}
+              ) {
+                uuid
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {
+            "org_unit": org_unit,
+            "person": person,
+            "association_type": association_type,
+        }
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingCreateAssociation.parse_obj(data).association_create
+
+    async def _testing__create_engagement(
+        self, orgunit: UUID, person: UUID, engagement_type: UUID, job_function: UUID
+    ) -> TestingCreateEngagementEngagementCreate:
+        query = gql(
+            """
+            mutation _Testing_CreateEngagement($orgunit: UUID!, $person: UUID!, $engagement_type: UUID!, $job_function: UUID!) {
+              engagement_create(
+                input: {org_unit: $orgunit, engagement_type: $engagement_type, job_function: $job_function, person: $person, validity: {from: "2016-05-05"}}
+              ) {
+                uuid
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {
+            "orgunit": orgunit,
+            "person": person,
+            "engagement_type": engagement_type,
+            "job_function": job_function,
+        }
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingCreateEngagement.parse_obj(data).engagement_create
