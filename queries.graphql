@@ -236,6 +236,33 @@ query _Testing_GetJobFunction {
   }
 }
 
+query _Testing_GetLederOrgUnitAssociations($uuid: UUID!) {
+    org_units(filter: { uuids: [$uuid] }) {
+        objects {
+            validities {
+                uuid
+                name
+                associations {
+                    uuid
+                    employee_uuid
+                    org_unit_uuid
+                    association_type_uuid
+                    validity {
+                        from
+                        to
+                    }
+                }
+                parent {
+                    uuid
+                    name
+                    parent_uuid
+                    org_unit_level_uuid
+                }
+            }
+        }
+    }
+}
+
 mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
   org_unit_create(
     input: {

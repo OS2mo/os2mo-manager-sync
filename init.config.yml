@@ -14,6 +14,14 @@ facets:
     Ansat:
       title: "Ansat"
       scope: "TEXT"
+  engagement_type:
+    Ansat:
+      title: "Ansat"
+      scope: "TEXT"
+  engagement_job_function:
+    Jurist:
+      title: "Jurist"
+      scope: "TEXT"
   org_unit_level:
     N1:
       title: "N1"

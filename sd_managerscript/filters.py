@@ -134,7 +134,6 @@ async def get_latest_parent_engagement_from(
     Returns:
         datetime of latest engagement 'from' in parent org unit, or None if no valid engagement
     """
-    # TODO: Giver det mening at hente alle engagementer ud for enheden?
     data = await mo.engagements(employee_uuid)
 
     latest: datetime | None = None

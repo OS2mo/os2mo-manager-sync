@@ -25,6 +25,27 @@ from ._testing__get_job_function import TestingGetJobFunctionFacets
 from ._testing__get_job_function import TestingGetJobFunctionFacetsObjects
 from ._testing__get_job_function import TestingGetJobFunctionFacetsObjectsCurrent
 from ._testing__get_job_function import TestingGetJobFunctionFacetsObjectsCurrentClasses
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociations,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnits,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnitsObjects,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValidities,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesAssociations,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesAssociationsValidity,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesParent,
+)
 from ._testing__get_manager_level import TestingGetManagerLevel
 from ._testing__get_manager_level import TestingGetManagerLevelClasses
 from ._testing__get_manager_level import TestingGetManagerLevelClassesObjects
@@ -474,6 +495,13 @@ __all__ = [
     "TestingGetJobFunctionFacetsObjects",
     "TestingGetJobFunctionFacetsObjectsCurrent",
     "TestingGetJobFunctionFacetsObjectsCurrentClasses",
+    "TestingGetLederOrgUnitAssociations",
+    "TestingGetLederOrgUnitAssociationsOrgUnits",
+    "TestingGetLederOrgUnitAssociationsOrgUnitsObjects",
+    "TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValidities",
+    "TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesAssociations",
+    "TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesAssociationsValidity",
+    "TestingGetLederOrgUnitAssociationsOrgUnitsObjectsValiditiesParent",
     "TestingGetManagerLevel",
     "TestingGetManagerLevelByUserKey",
     "TestingGetManagerLevelByUserKeyClasses",

@@ -15,6 +15,12 @@ from ._testing__get_engagement_type import TestingGetEngagementType
 from ._testing__get_engagement_type import TestingGetEngagementTypeFacets
 from ._testing__get_job_function import TestingGetJobFunction
 from ._testing__get_job_function import TestingGetJobFunctionFacets
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociations,
+)
+from ._testing__get_leder_org_unit_associations import (
+    TestingGetLederOrgUnitAssociationsOrgUnits,
+)
 from ._testing__get_manager_level import TestingGetManagerLevel
 from ._testing__get_manager_level import TestingGetManagerLevelClasses
 from ._testing__get_manager_level_by_user_key import TestingGetManagerLevelByUserKey
@@ -471,6 +477,44 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TestingGetJobFunction.parse_obj(data).facets
+
+    async def _testing__get_leder_org_unit_associations(
+        self, uuid: UUID
+    ) -> TestingGetLederOrgUnitAssociationsOrgUnits:
+        query = gql(
+            """
+            query _Testing_GetLederOrgUnitAssociations($uuid: UUID!) {
+              org_units(filter: {uuids: [$uuid]}) {
+                objects {
+                  validities {
+                    uuid
+                    name
+                    associations {
+                      uuid
+                      employee_uuid
+                      org_unit_uuid
+                      association_type_uuid
+                      validity {
+                        from
+                        to
+                      }
+                    }
+                    parent {
+                      uuid
+                      name
+                      parent_uuid
+                      org_unit_level_uuid
+                    }
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {"uuid": uuid}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetLederOrgUnitAssociations.parse_obj(data).org_units
 
     async def _testing__create_org_unit(
         self,
