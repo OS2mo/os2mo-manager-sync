@@ -14,9 +14,14 @@ class TestingCreateOrgUnitOrgUnitCreate(BaseModel):
 
 
 class TestingCreateOrgUnitOrgUnitCreateCurrent(BaseModel):
-    org_unit_level_uuid: UUID | None
+    org_unit_level: Optional["TestingCreateOrgUnitOrgUnitCreateCurrentOrgUnitLevel"]
+
+
+class TestingCreateOrgUnitOrgUnitCreateCurrentOrgUnitLevel(BaseModel):
+    user_key: str
 
 
 TestingCreateOrgUnit.update_forward_refs()
 TestingCreateOrgUnitOrgUnitCreate.update_forward_refs()
 TestingCreateOrgUnitOrgUnitCreateCurrent.update_forward_refs()
+TestingCreateOrgUnitOrgUnitCreateCurrentOrgUnitLevel.update_forward_refs()

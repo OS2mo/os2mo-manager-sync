@@ -208,8 +208,21 @@ async def test_get_manager_level(
     ]
     for org_unit in org_units:
         manager_level = await get_manager_level(graphql_client, settings, org_unit.uuid)
-        expected = settings.manager_level_mapping[org_unit.current.org_unit_level_uuid]  # type: ignore
-        assert manager_level == expected
+
+        org_unit_level_user_key = org_unit.current.org_unit_level.user_key  # type: ignore
+        expected_user_key = settings.manager_level_mapping[org_unit_level_user_key]
+
+        expected_manager_level_uuid = (
+            (
+                await graphql_client._testing__get_manager_level_by_user_key(
+                    expected_user_key
+                )
+            )
+            .objects[0]
+            .uuid
+        )
+
+        assert manager_level == expected_manager_level_uuid
 
 
 @pytest.mark.integration_test
@@ -270,10 +283,25 @@ async def test_build_manager_mutation(
 
     # Validate
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    expected_levels = {
-        department_a: settings.manager_level_mapping[org_unit_levels[0].uuid],
-        department_b: settings.manager_level_mapping[org_unit_levels[1].uuid],
-    }
+
+    expected_levels = {}
+    for org_unit_uuid, org_unit_level in [
+        (department_a, org_unit_levels[0]),
+        (department_b, org_unit_levels[1]),
+    ]:
+        manager_level_user_key = settings.manager_level_mapping[
+            org_unit_level.current.user_key  # type: ignore
+        ]
+        manager_level_uuid = (
+            (
+                await graphql_client._testing__get_manager_level_by_user_key(
+                    manager_level_user_key
+                )
+            )
+            .objects[0]
+            .uuid
+        )
+        expected_levels[org_unit_uuid] = manager_level_uuid
 
     assert len(mutations) == 2
     for m in mutations:

@@ -16,7 +16,7 @@ class _Settings(BaseSettings):
     responsibility_uuid: UUID = Field(
         description="UUID defining responsibility. Same for all managers"
     )
-    manager_level_mapping: dict[UUID, UUID] = Field(
+    manager_level_mapping: dict[str, str] = Field(
         description="Mapping dict from org-unit level to manager level"
     )
 

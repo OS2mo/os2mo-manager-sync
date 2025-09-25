@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from ._testing__create_association import TestingCreateAssociation
@@ -16,6 +17,10 @@ from ._testing__get_job_function import TestingGetJobFunction
 from ._testing__get_job_function import TestingGetJobFunctionFacets
 from ._testing__get_manager_level import TestingGetManagerLevel
 from ._testing__get_manager_level import TestingGetManagerLevelClasses
+from ._testing__get_manager_level_by_user_key import TestingGetManagerLevelByUserKey
+from ._testing__get_manager_level_by_user_key import (
+    TestingGetManagerLevelByUserKeyClasses,
+)
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
 from ._testing__get_org_unit_type import TestingGetOrgUnitType
@@ -37,6 +42,8 @@ from .leder_org_units import LederOrgUnits
 from .leder_org_units import LederOrgUnitsOrgUnits
 from .manager_engagements import ManagerEngagements
 from .manager_engagements import ManagerEngagementsOrgUnits
+from .manager_level import ManagerLevel
+from .manager_level import ManagerLevelClasses
 from .org_unit_level import OrgUnitLevel
 from .org_unit_level import OrgUnitLevelOrgUnits
 from .root_manager_engagements import RootManagerEngagements
@@ -225,10 +232,14 @@ class GraphQLClient(AsyncBaseClient):
                   validities {
                     uuid
                     name
-                    org_unit_level_uuid
+                    org_unit_level {
+                      user_key
+                    }
                     parent {
                       uuid
-                      org_unit_level_uuid
+                      org_unit_level {
+                        user_key
+                      }
                     }
                   }
                 }
@@ -240,6 +251,25 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return OrgUnitLevel.parse_obj(data).org_units
+
+    async def manager_level(self, user_key: str) -> ManagerLevelClasses:
+        query = gql(
+            """
+            query ManagerLevel($user_key: String!) {
+              classes(filter: {user_keys: [$user_key]}) {
+                objects {
+                  validities {
+                    uuid
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {"user_key": user_key}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return ManagerLevel.parse_obj(data).classes
 
     async def create_manager(
         self, input: ManagerCreateInput
@@ -333,6 +363,9 @@ class GraphQLClient(AsyncBaseClient):
               classes(filter: {facet_user_keys: "org_unit_level"}) {
                 objects {
                   uuid
+                  current {
+                    user_key
+                  }
                 }
               }
             }
@@ -398,6 +431,25 @@ class GraphQLClient(AsyncBaseClient):
         data = self.get_data(response)
         return TestingGetManagerLevel.parse_obj(data).classes
 
+    async def _testing__get_manager_level_by_user_key(
+        self, user_key: str
+    ) -> TestingGetManagerLevelByUserKeyClasses:
+        query = gql(
+            """
+            query _Testing_GetManagerLevelByUserKey($user_key: String!) {
+              classes(filter: {user_keys: [$user_key], facet_user_keys: "manager_level"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {"user_key": user_key}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetManagerLevelByUserKey.parse_obj(data).classes
+
     async def _testing__get_job_function(self) -> TestingGetJobFunctionFacets:
         query = gql(
             """
@@ -435,7 +487,9 @@ class GraphQLClient(AsyncBaseClient):
               ) {
                 uuid
                 current {
-                  org_unit_level_uuid
+                  org_unit_level {
+                    user_key
+                  }
                 }
               }
             }
@@ -472,13 +526,18 @@ class GraphQLClient(AsyncBaseClient):
         return TestingCreateEmployee.parse_obj(data).employee_create
 
     async def _testing__create_association(
-        self, org_unit: UUID, person: UUID, association_type: UUID
+        self,
+        org_unit: UUID,
+        person: UUID,
+        association_type: UUID,
+        from_: datetime | None | UnsetType = UNSET,
+        to: datetime | None | UnsetType = UNSET,
     ) -> TestingCreateAssociationAssociationCreate:
         query = gql(
             """
-            mutation _Testing_CreateAssociation($org_unit: UUID!, $person: UUID!, $association_type: UUID!) {
+            mutation _Testing_CreateAssociation($org_unit: UUID!, $person: UUID!, $association_type: UUID!, $from: DateTime = "2016-05-05", $to: DateTime = null) {
               association_create(
-                input: {validity: {from: "2010-02-03"}, org_unit: $org_unit, association_type: $association_type, person: $person}
+                input: {org_unit: $org_unit, association_type: $association_type, person: $person, validity: {from: $from, to: $to}}
               ) {
                 uuid
               }
@@ -489,19 +548,27 @@ class GraphQLClient(AsyncBaseClient):
             "org_unit": org_unit,
             "person": person,
             "association_type": association_type,
+            "from": from_,
+            "to": to,
         }
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TestingCreateAssociation.parse_obj(data).association_create
 
     async def _testing__create_engagement(
-        self, orgunit: UUID, person: UUID, engagement_type: UUID, job_function: UUID
+        self,
+        orgunit: UUID,
+        person: UUID,
+        engagement_type: UUID,
+        job_function: UUID,
+        from_: datetime | None | UnsetType = UNSET,
+        to: datetime | None | UnsetType = UNSET,
     ) -> TestingCreateEngagementEngagementCreate:
         query = gql(
             """
-            mutation _Testing_CreateEngagement($orgunit: UUID!, $person: UUID!, $engagement_type: UUID!, $job_function: UUID!) {
+            mutation _Testing_CreateEngagement($orgunit: UUID!, $person: UUID!, $engagement_type: UUID!, $job_function: UUID!, $from: DateTime = "2016-05-05", $to: DateTime = null) {
               engagement_create(
-                input: {org_unit: $orgunit, engagement_type: $engagement_type, job_function: $job_function, person: $person, validity: {from: "2016-05-05"}}
+                input: {org_unit: $orgunit, engagement_type: $engagement_type, job_function: $job_function, person: $person, validity: {from: $from, to: $to}}
               ) {
                 uuid
               }
@@ -513,6 +580,8 @@ class GraphQLClient(AsyncBaseClient):
             "person": person,
             "engagement_type": engagement_type,
             "job_function": job_function,
+            "from": from_,
+            "to": to,
         }
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)

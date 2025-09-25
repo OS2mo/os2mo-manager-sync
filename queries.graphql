@@ -120,11 +120,25 @@ query OrgUnitLevel($uuids: UUID!) {
             validities {
                 uuid
                 name
-                org_unit_level_uuid
+                org_unit_level {
+                    user_key
+                }
                 parent {
                     uuid
-                    org_unit_level_uuid
+                    org_unit_level {
+                        user_key
+                    }
                 }
+            }
+        }
+    }
+}
+
+query ManagerLevel($user_key: String!) {
+    classes(filter: { user_keys: [$user_key] }) {
+        objects {
+            validities {
+                uuid
             }
         }
     }
@@ -166,6 +180,9 @@ query _Testing_GetOrgUnitLevel {
   classes(filter: {facet_user_keys: "org_unit_level"}) {
     objects {
       uuid
+      current {
+        user_key
+      }
     }
   }
 }
@@ -198,6 +215,14 @@ query _Testing_GetManagerLevel {
   }
 }
 
+query _Testing_GetManagerLevelByUserKey($user_key: String!) {
+  classes(filter: {user_keys: [$user_key], facet_user_keys: "manager_level"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
 query _Testing_GetJobFunction {
   facets(filter: {user_keys: "engagement_job_function"}) {
     objects {
@@ -223,7 +248,9 @@ mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: U
   ) {
     uuid
     current {
-      org_unit_level_uuid
+      org_unit_level {
+        user_key
+      }
     }
   }
 }
@@ -238,22 +265,37 @@ mutation _Testing_CreateAssociation(
   $org_unit: UUID!
   $person: UUID!
   $association_type: UUID!
+  $from: DateTime = "2016-05-05"
+  $to: DateTime = null
 ) {
   association_create(
     input: {
-      validity: { from: "2010-02-03" }
       org_unit: $org_unit
       association_type: $association_type
       person: $person
+      validity: { from: $from, to: $to }
     }
   ) {
     uuid
   }
 }
 
-mutation _Testing_CreateEngagement($orgunit: UUID!, $person: UUID!, $engagement_type: UUID!, $job_function: UUID!) {
+mutation _Testing_CreateEngagement(
+  $orgunit: UUID!
+  $person: UUID!
+  $engagement_type: UUID!
+  $job_function: UUID!
+  $from: DateTime = "2016-05-05"
+  $to: DateTime = null
+) {
   engagement_create(
-    input: {org_unit: $orgunit, engagement_type: $engagement_type, job_function: $job_function, person: $person, validity: {from: "2016-05-05"}}
+    input: {
+      org_unit: $orgunit
+      engagement_type: $engagement_type
+      job_function: $job_function
+      person: $person
+      validity: { from: $from, to: $to }
+    }
   ) {
     uuid
   }

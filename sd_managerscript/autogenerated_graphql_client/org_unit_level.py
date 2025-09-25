@@ -19,17 +19,27 @@ class OrgUnitLevelOrgUnitsObjects(BaseModel):
 class OrgUnitLevelOrgUnitsObjectsValidities(BaseModel):
     uuid: UUID
     name: str
-    org_unit_level_uuid: UUID | None
+    org_unit_level: Optional["OrgUnitLevelOrgUnitsObjectsValiditiesOrgUnitLevel"]
     parent: Optional["OrgUnitLevelOrgUnitsObjectsValiditiesParent"]
+
+
+class OrgUnitLevelOrgUnitsObjectsValiditiesOrgUnitLevel(BaseModel):
+    user_key: str
 
 
 class OrgUnitLevelOrgUnitsObjectsValiditiesParent(BaseModel):
     uuid: UUID
-    org_unit_level_uuid: UUID | None
+    org_unit_level: Optional["OrgUnitLevelOrgUnitsObjectsValiditiesParentOrgUnitLevel"]
+
+
+class OrgUnitLevelOrgUnitsObjectsValiditiesParentOrgUnitLevel(BaseModel):
+    user_key: str
 
 
 OrgUnitLevel.update_forward_refs()
 OrgUnitLevelOrgUnits.update_forward_refs()
 OrgUnitLevelOrgUnitsObjects.update_forward_refs()
 OrgUnitLevelOrgUnitsObjectsValidities.update_forward_refs()
+OrgUnitLevelOrgUnitsObjectsValiditiesOrgUnitLevel.update_forward_refs()
 OrgUnitLevelOrgUnitsObjectsValiditiesParent.update_forward_refs()
+OrgUnitLevelOrgUnitsObjectsValiditiesParentOrgUnitLevel.update_forward_refs()

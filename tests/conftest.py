@@ -18,10 +18,14 @@ from sd_managerscript.config import _Settings
 from sd_managerscript.main import create_app
 
 manager_level_mapping = {
-    "418b313a-979f-4a26-807e-ba8dd3114d74": "97ab3d21-4b9d-420c-b738-fde6a56ffb45",
-    "53350314-820e-4bcc-a286-b0c1bb7738e9": "9a2bbe63-b7b4-4b3d-9b47-9d7dd391b42c",
-    "84f95e29-48a0-4175-85fd-84a1f596e1a4": "d09ba017-f838-4742-b57e-44c2f5437e38",
-    "abbbefb2-85a6-4a5d-ad94-98a363adfee6": "f0a18e70-dcd1-4c42-9cb3-f9602fb25a69",
+    "N1": "Niveau 1",
+    "N2": "Niveau 2",
+    "N3": "Niveau 3",
+    "N4": "Niveau 4",
+    "N5": "Niveau 4",
+    "N6": "Niveau 4",
+    "N7": "Niveau 4",
+    "N8": "Niveau 4",
 }
 
 
