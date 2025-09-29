@@ -147,10 +147,7 @@ async def test_reconcile_org_unit_associations(
     ).uuid
 
     engagement_type = (
-        (await graphql_client._testing__get_engagement_type())
-        .objects[0]
-        .current.classes[0]  # type: ignore
-        .uuid
+        (await graphql_client._testing__get_engagement_type()).objects[0].uuid
     )
     job_function = (
         (await graphql_client._testing__get_job_function())
@@ -312,10 +309,7 @@ async def test_compute_expected_managers(
     )
 
     engagement_type = (
-        (await graphql_client._testing__get_engagement_type())
-        .objects[0]
-        .current.classes[0]  # type: ignore
-        .uuid
+        (await graphql_client._testing__get_engagement_type()).objects[0].uuid
     )
     job_function = (
         (await graphql_client._testing__get_job_function())

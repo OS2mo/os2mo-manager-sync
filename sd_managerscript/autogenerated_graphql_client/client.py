@@ -7,12 +7,14 @@ from ._testing__create_employee import TestingCreateEmployee
 from ._testing__create_employee import TestingCreateEmployeeEmployeeCreate
 from ._testing__create_engagement import TestingCreateEngagement
 from ._testing__create_engagement import TestingCreateEngagementEngagementCreate
+from ._testing__create_manager import TestingCreateManager
+from ._testing__create_manager import TestingCreateManagerManagerCreate
 from ._testing__create_org_unit import TestingCreateOrgUnit
 from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreate
 from ._testing__get_association_type import TestingGetAssociationType
 from ._testing__get_association_type import TestingGetAssociationTypeClasses
 from ._testing__get_engagement_type import TestingGetEngagementType
-from ._testing__get_engagement_type import TestingGetEngagementTypeFacets
+from ._testing__get_engagement_type import TestingGetEngagementTypeClasses
 from ._testing__get_job_function import TestingGetJobFunction
 from ._testing__get_job_function import TestingGetJobFunctionFacets
 from ._testing__get_leder_org_unit_associations import (
@@ -27,6 +29,10 @@ from ._testing__get_manager_level_by_user_key import TestingGetManagerLevelByUse
 from ._testing__get_manager_level_by_user_key import (
     TestingGetManagerLevelByUserKeyClasses,
 )
+from ._testing__get_manager_responsibility import TestingGetManagerResponsibility
+from ._testing__get_manager_responsibility import TestingGetManagerResponsibilityClasses
+from ._testing__get_manager_type import TestingGetManagerType
+from ._testing__get_manager_type import TestingGetManagerTypeClasses
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
 from ._testing__get_org_unit_type import TestingGetOrgUnitType
@@ -399,17 +405,13 @@ class GraphQLClient(AsyncBaseClient):
         data = self.get_data(response)
         return TestingGetAssociationType.parse_obj(data).classes
 
-    async def _testing__get_engagement_type(self) -> TestingGetEngagementTypeFacets:
+    async def _testing__get_engagement_type(self) -> TestingGetEngagementTypeClasses:
         query = gql(
             """
             query _Testing_GetEngagementType {
-              facets(filter: {user_keys: "engagement_type"}) {
+              classes(filter: {facet_user_keys: "engagement_type"}) {
                 objects {
-                  current {
-                    classes {
-                      uuid
-                    }
-                  }
+                  uuid
                 }
               }
             }
@@ -418,7 +420,7 @@ class GraphQLClient(AsyncBaseClient):
         variables: dict[str, object] = {}
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
-        return TestingGetEngagementType.parse_obj(data).facets
+        return TestingGetEngagementType.parse_obj(data).classes
 
     async def _testing__get_manager_level(self) -> TestingGetManagerLevelClasses:
         query = gql(
@@ -455,6 +457,42 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TestingGetManagerLevelByUserKey.parse_obj(data).classes
+
+    async def _testing__get_manager_type(self) -> TestingGetManagerTypeClasses:
+        query = gql(
+            """
+            query _Testing_GetManagerType {
+              classes(filter: {facet_user_keys: "manager_type"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetManagerType.parse_obj(data).classes
+
+    async def _testing__get_manager_responsibility(
+        self,
+    ) -> TestingGetManagerResponsibilityClasses:
+        query = gql(
+            """
+            query _Testing_GetManagerResponsibility {
+              classes(filter: {facet_user_keys: "responsibility"}) {
+                objects {
+                  uuid
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetManagerResponsibility.parse_obj(data).classes
 
     async def _testing__get_job_function(self) -> TestingGetJobFunctionFacets:
         query = gql(
@@ -630,3 +668,37 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TestingCreateEngagement.parse_obj(data).engagement_create
+
+    async def _testing__create_manager(
+        self,
+        orgunit: UUID,
+        person: UUID,
+        manager_level: UUID,
+        manager_type: UUID,
+        responsibility: UUID,
+        from_: datetime | None | UnsetType = UNSET,
+        to: datetime | None | UnsetType = UNSET,
+    ) -> TestingCreateManagerManagerCreate:
+        query = gql(
+            """
+            mutation _Testing_CreateManager($orgunit: UUID!, $person: UUID!, $manager_level: UUID!, $manager_type: UUID!, $responsibility: UUID!, $from: DateTime = "2016-05-05", $to: DateTime = null) {
+              manager_create(
+                input: {org_unit: $orgunit, manager_level: $manager_level, manager_type: $manager_type, responsibility: [$responsibility], person: $person, validity: {from: $from, to: $to}}
+              ) {
+                uuid
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {
+            "orgunit": orgunit,
+            "person": person,
+            "manager_level": manager_level,
+            "manager_type": manager_type,
+            "responsibility": responsibility,
+            "from": from_,
+            "to": to,
+        }
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingCreateManager.parse_obj(data).manager_create

@@ -1,31 +1,20 @@
-from typing import Optional
 from uuid import UUID
 
 from .base_model import BaseModel
 
 
 class TestingGetEngagementType(BaseModel):
-    facets: "TestingGetEngagementTypeFacets"
+    classes: "TestingGetEngagementTypeClasses"
 
 
-class TestingGetEngagementTypeFacets(BaseModel):
-    objects: list["TestingGetEngagementTypeFacetsObjects"]
+class TestingGetEngagementTypeClasses(BaseModel):
+    objects: list["TestingGetEngagementTypeClassesObjects"]
 
 
-class TestingGetEngagementTypeFacetsObjects(BaseModel):
-    current: Optional["TestingGetEngagementTypeFacetsObjectsCurrent"]
-
-
-class TestingGetEngagementTypeFacetsObjectsCurrent(BaseModel):
-    classes: list["TestingGetEngagementTypeFacetsObjectsCurrentClasses"]
-
-
-class TestingGetEngagementTypeFacetsObjectsCurrentClasses(BaseModel):
+class TestingGetEngagementTypeClassesObjects(BaseModel):
     uuid: UUID
 
 
 TestingGetEngagementType.update_forward_refs()
-TestingGetEngagementTypeFacets.update_forward_refs()
-TestingGetEngagementTypeFacetsObjects.update_forward_refs()
-TestingGetEngagementTypeFacetsObjectsCurrent.update_forward_refs()
-TestingGetEngagementTypeFacetsObjectsCurrentClasses.update_forward_refs()
+TestingGetEngagementTypeClasses.update_forward_refs()
+TestingGetEngagementTypeClassesObjects.update_forward_refs()

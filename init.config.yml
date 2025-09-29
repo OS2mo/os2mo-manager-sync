@@ -60,3 +60,11 @@ facets:
     Niveau 4:
       title: "Niveau 4"
       scope: "TEXT"
+  manager_type:
+    Leder:
+      title: "Leder"
+      scope: "TEXT"
+  responsibility:
+    MUS:
+      title: "MUS"
+      scope: "TEXT"

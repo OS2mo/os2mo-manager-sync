@@ -4,6 +4,8 @@ from ._testing__create_employee import TestingCreateEmployee
 from ._testing__create_employee import TestingCreateEmployeeEmployeeCreate
 from ._testing__create_engagement import TestingCreateEngagement
 from ._testing__create_engagement import TestingCreateEngagementEngagementCreate
+from ._testing__create_manager import TestingCreateManager
+from ._testing__create_manager import TestingCreateManagerManagerCreate
 from ._testing__create_org_unit import TestingCreateOrgUnit
 from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreate
 from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreateCurrent
@@ -14,12 +16,8 @@ from ._testing__get_association_type import TestingGetAssociationType
 from ._testing__get_association_type import TestingGetAssociationTypeClasses
 from ._testing__get_association_type import TestingGetAssociationTypeClassesObjects
 from ._testing__get_engagement_type import TestingGetEngagementType
-from ._testing__get_engagement_type import TestingGetEngagementTypeFacets
-from ._testing__get_engagement_type import TestingGetEngagementTypeFacetsObjects
-from ._testing__get_engagement_type import TestingGetEngagementTypeFacetsObjectsCurrent
-from ._testing__get_engagement_type import (
-    TestingGetEngagementTypeFacetsObjectsCurrentClasses,
-)
+from ._testing__get_engagement_type import TestingGetEngagementTypeClasses
+from ._testing__get_engagement_type import TestingGetEngagementTypeClassesObjects
 from ._testing__get_job_function import TestingGetJobFunction
 from ._testing__get_job_function import TestingGetJobFunctionFacets
 from ._testing__get_job_function import TestingGetJobFunctionFacetsObjects
@@ -56,6 +54,14 @@ from ._testing__get_manager_level_by_user_key import (
 from ._testing__get_manager_level_by_user_key import (
     TestingGetManagerLevelByUserKeyClassesObjects,
 )
+from ._testing__get_manager_responsibility import TestingGetManagerResponsibility
+from ._testing__get_manager_responsibility import TestingGetManagerResponsibilityClasses
+from ._testing__get_manager_responsibility import (
+    TestingGetManagerResponsibilityClassesObjects,
+)
+from ._testing__get_manager_type import TestingGetManagerType
+from ._testing__get_manager_type import TestingGetManagerTypeClasses
+from ._testing__get_manager_type import TestingGetManagerTypeClassesObjects
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClassesObjects
@@ -478,6 +484,8 @@ __all__ = [
     "TestingCreateEmployeeEmployeeCreate",
     "TestingCreateEngagement",
     "TestingCreateEngagementEngagementCreate",
+    "TestingCreateManager",
+    "TestingCreateManagerManagerCreate",
     "TestingCreateOrgUnit",
     "TestingCreateOrgUnitOrgUnitCreate",
     "TestingCreateOrgUnitOrgUnitCreateCurrent",
@@ -486,10 +494,8 @@ __all__ = [
     "TestingGetAssociationTypeClasses",
     "TestingGetAssociationTypeClassesObjects",
     "TestingGetEngagementType",
-    "TestingGetEngagementTypeFacets",
-    "TestingGetEngagementTypeFacetsObjects",
-    "TestingGetEngagementTypeFacetsObjectsCurrent",
-    "TestingGetEngagementTypeFacetsObjectsCurrentClasses",
+    "TestingGetEngagementTypeClasses",
+    "TestingGetEngagementTypeClassesObjects",
     "TestingGetJobFunction",
     "TestingGetJobFunctionFacets",
     "TestingGetJobFunctionFacetsObjects",
@@ -508,6 +514,12 @@ __all__ = [
     "TestingGetManagerLevelByUserKeyClassesObjects",
     "TestingGetManagerLevelClasses",
     "TestingGetManagerLevelClassesObjects",
+    "TestingGetManagerResponsibility",
+    "TestingGetManagerResponsibilityClasses",
+    "TestingGetManagerResponsibilityClassesObjects",
+    "TestingGetManagerType",
+    "TestingGetManagerTypeClasses",
+    "TestingGetManagerTypeClassesObjects",
     "TestingGetOrgUnitLevel",
     "TestingGetOrgUnitLevelClasses",
     "TestingGetOrgUnitLevelClassesObjects",
