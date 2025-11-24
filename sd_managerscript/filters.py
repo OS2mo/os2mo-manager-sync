@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2022 Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
 import asyncio
+from copy import deepcopy
 from datetime import datetime
 from uuid import UUID
 
@@ -19,7 +20,7 @@ from .exceptions import ConflictingManagers
 logger = structlog.get_logger()
 
 
-async def reconcile_org_unit_associations(
+async def filter_org_unit_associations(
     mo: GraphQLClient, org_unit: LederOrgUnitsOrgUnitsObjectsValidities
 ) -> tuple[LederOrgUnitsOrgUnitsObjectsValidities, list[UUID]]:
     """
@@ -29,9 +30,11 @@ async def reconcile_org_unit_associations(
         - org_unit with only the latest valid association
         - list of association UUIDs to terminate
     """
-    associations = org_unit.associations
+    org_unit_copy = deepcopy(org_unit)
+    associations = org_unit_copy.associations
+
     if not associations:
-        return org_unit, []
+        return org_unit_copy, []
 
     # Determine latest valid association
     latest_assoc = await pick_latest_valid_association(mo, org_unit)
@@ -39,13 +42,13 @@ async def reconcile_org_unit_associations(
     if not latest_assoc:
         # Nothing valid → all associations are redundant
         to_terminate = [assoc.uuid for assoc in associations]
-        org_unit.associations = []
-        return org_unit, to_terminate
+        org_unit_copy.associations = []
+        return org_unit_copy, to_terminate
 
     # Keep only the latest, mark others for termination
     to_terminate = [assoc.uuid for assoc in associations if assoc != latest_assoc]
-    org_unit.associations = [latest_assoc]
-    return org_unit, to_terminate
+    org_unit_copy.associations = [latest_assoc]
+    return org_unit_copy, to_terminate
 
 
 async def compute_expected_managers(
@@ -88,7 +91,7 @@ async def pick_latest_valid_association(
     parent_uuid = org_unit.parent.uuid
     associations = org_unit.associations
 
-    # Fetch latest engagement dates for all associations
+    # Fetch latest engagement dates for all associations, since the person with this engagement should be the manager
     engagement_dates = await asyncio.gather(
         *[
             get_latest_parent_engagement_from(mo, assoc.employee_uuid, parent_uuid)
@@ -134,11 +137,11 @@ async def get_latest_parent_engagement_from(
     Returns:
         datetime of latest engagement 'from' in parent org unit, or None if no valid engagement
     """
-    data = await mo.engagements(employee_uuid)
+    engagements = await mo.engagements(employee_uuid)
 
     latest: datetime | None = None
 
-    for eng in data.objects:
+    for eng in engagements.objects:
         for val in eng.validities:
             if val.org_unit_uuid != parent_uuid:
                 continue

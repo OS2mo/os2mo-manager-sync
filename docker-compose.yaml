@@ -7,8 +7,6 @@ services:
     build:
       context: .
     environment:
-      ENVIRONMENT: "development"
-
       FASTRAMQPI__LOG_LEVEL: "INFO"
       FASTRAMQPI__JSON_LOGS: "true"
 
@@ -53,7 +51,7 @@ services:
       POSTGRES_PASSWORD: "fastramqpi"
       POSTGRES_DB: "fastramqpi"
     networks:
-      - default
+      - os2mo_default
 
 networks:
   os2mo_default:

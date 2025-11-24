@@ -7,7 +7,7 @@ from pydantic import BaseSettings
 from pydantic import Field
 
 
-class _Settings(BaseSettings):
+class ManagerSyncSettings(BaseSettings):
     fastramqpi: FastRAMQPISettings
     root_uuid: UUID = Field(description="UUID of the root org-unit")
     manager_type_uuid: UUID = Field(

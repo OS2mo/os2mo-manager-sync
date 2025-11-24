@@ -26,22 +26,21 @@ async def get_leder_org_units(
     mo: GraphQLClient,
 ) -> list[LederOrgUnitsOrgUnitsObjectsValidities]:
     """
-    Fetch all _leder org units with associations and convert them into OrgUnitManagers models.
+    Fetch all _leder org units with associations and convert them into LederOrgUnitsOrgUnitsObjectsValidities models.
     """
 
     data = await mo.leder_org_units()
-    leder_units: list[LederOrgUnitsOrgUnitsObjectsValidities] = []
 
-    for ou in data.objects:
-        for validity in ou.validities:
-            if (
-                validity.associations
-                and validity.name.lower().strip().endswith("_leder")
-                and not validity.name.lower().strip().startswith("ø_")
-            ):
-                leder_units.append(validity)
-
-    return leder_units
+    return [
+        validity
+        for ou in data.objects
+        for validity in ou.validities
+        if (
+            validity.associations
+            and validity.name.lower().strip().endswith("_leder")
+            and not validity.name.lower().strip().startswith("ø_")
+        )
+    ]
 
 
 async def get_manager_level(

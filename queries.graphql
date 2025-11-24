@@ -150,6 +150,12 @@ mutation CreateManager($input: ManagerCreateInput!) {
     }
 }
 
+mutation CreateManagers($input: [ManagerCreateInput!]!) {
+    managers_create(input: $input) {
+        uuid
+    }
+}
+
 mutation UpdateManager($input: ManagerUpdateInput!) {
     manager_update(input: $input) {
         uuid

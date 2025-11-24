@@ -19,7 +19,6 @@ more-itertools = "^9"
 uvicorn = "^0.34"
 structlog = "^24"
 fastramqpi = "^12"
-psycopg2 = "^2"
 websockets = "^13" # for ariadne
 httpx = "^0.27"
 fastapi = "^0.115"
@@ -98,6 +97,4 @@ force-single-line = true
 DEP002 = [
   # uvicorn is used by the Dockerfile
   "uvicorn",
-  # psycopg2 is used as a string in the postgres connector
-  "psycopg2",
 ]
