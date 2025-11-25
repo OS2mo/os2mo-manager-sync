@@ -74,11 +74,9 @@ async def reconcile_leder_managers(
     ) - timedelta(days=1)
 
     # Step 6: Apply changes
-    for manager in managers_to_create:
-        await mo.create_manager(manager)
+    await mo.create_managers(managers_to_create)
 
     for key, manager_uuid in to_terminate:
-        print("Deleting: ", manager_uuid)
         await mo.terminate_manager(
             ManagerTerminateInput(uuid=manager_uuid, to=yesterday)
         )

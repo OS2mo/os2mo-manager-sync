@@ -42,6 +42,8 @@ from .base_model import UNSET
 from .base_model import UnsetType
 from .create_manager import CreateManager
 from .create_manager import CreateManagerManagerCreate
+from .create_managers import CreateManagers
+from .create_managers import CreateManagersManagersCreate
 from .current_managers import CurrentManagers
 from .current_managers import CurrentManagersManagers
 from .engagements import Engagements
@@ -299,6 +301,23 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return CreateManager.parse_obj(data).manager_create
+
+    async def create_managers(
+        self, input: list[ManagerCreateInput]
+    ) -> list[CreateManagersManagersCreate]:
+        query = gql(
+            """
+            mutation CreateManagers($input: [ManagerCreateInput!]!) {
+              managers_create(input: $input) {
+                uuid
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {"input": input}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return CreateManagers.parse_obj(data).managers_create
 
     async def update_manager(
         self, input: ManagerUpdateInput

@@ -74,6 +74,8 @@ from .base_model import BaseModel
 from .client import GraphQLClient
 from .create_manager import CreateManager
 from .create_manager import CreateManagerManagerCreate
+from .create_managers import CreateManagers
+from .create_managers import CreateManagersManagersCreate
 from .current_managers import CurrentManagers
 from .current_managers import CurrentManagersManagers
 from .current_managers import CurrentManagersManagersObjects
@@ -314,6 +316,8 @@ __all__ = [
     "ConfigurationFilter",
     "CreateManager",
     "CreateManagerManagerCreate",
+    "CreateManagers",
+    "CreateManagersManagersCreate",
     "CurrentManagers",
     "CurrentManagersManagers",
     "CurrentManagersManagersObjects",
