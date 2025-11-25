@@ -11,6 +11,8 @@ from ._testing__create_manager import TestingCreateManager
 from ._testing__create_manager import TestingCreateManagerManagerCreate
 from ._testing__create_org_unit import TestingCreateOrgUnit
 from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreate
+from ._testing__get_all_managers import TestingGetAllManagers
+from ._testing__get_all_managers import TestingGetAllManagersManagers
 from ._testing__get_association_type import TestingGetAssociationType
 from ._testing__get_association_type import TestingGetAssociationTypeClasses
 from ._testing__get_engagement_type import TestingGetEngagementType
@@ -35,6 +37,8 @@ from ._testing__get_manager_type import TestingGetManagerType
 from ._testing__get_manager_type import TestingGetManagerTypeClasses
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
+from ._testing__get_org_unit_manager import TestingGetOrgUnitManager
+from ._testing__get_org_unit_manager import TestingGetOrgUnitManagerManagers
 from ._testing__get_org_unit_type import TestingGetOrgUnitType
 from ._testing__get_org_unit_type import TestingGetOrgUnitTypeClasses
 from .async_base_client import AsyncBaseClient
@@ -572,6 +576,47 @@ class GraphQLClient(AsyncBaseClient):
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return TestingGetLederOrgUnitAssociations.parse_obj(data).org_units
+
+    async def _testing__get_org_unit_manager(
+        self, uuid: UUID
+    ) -> TestingGetOrgUnitManagerManagers:
+        query = gql(
+            """
+            query _Testing_GetOrgUnitManager($uuid: UUID!) {
+              managers(filter: {org_unit: {uuids: [$uuid]}}) {
+                objects {
+                  current {
+                    org_unit_uuid
+                    employee_uuid
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {"uuid": uuid}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetOrgUnitManager.parse_obj(data).managers
+
+    async def _testing__get_all_managers(self) -> TestingGetAllManagersManagers:
+        query = gql(
+            """
+            query _Testing_GetAllManagers {
+              managers {
+                objects {
+                  current {
+                    uuid
+                  }
+                }
+              }
+            }
+            """
+        )
+        variables: dict[str, object] = {}
+        response = await self.execute(query=query, variables=variables)
+        data = self.get_data(response)
+        return TestingGetAllManagers.parse_obj(data).managers
 
     async def _testing__create_org_unit(
         self,

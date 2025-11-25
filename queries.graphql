@@ -281,6 +281,27 @@ query _Testing_GetLederOrgUnitAssociations($uuid: UUID!) {
     }
 }
 
+query _Testing_GetOrgUnitManager($uuid: UUID!) {
+  managers(filter: {org_unit: {uuids: [$uuid]}}) {
+    objects {
+      current {
+        org_unit_uuid
+        employee_uuid
+      }
+    }
+  }
+}
+
+query _Testing_GetAllManagers {
+  managers {
+    objects {
+      current {
+        uuid
+      }
+    }
+  }
+}
+
 mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
   org_unit_create(
     input: {

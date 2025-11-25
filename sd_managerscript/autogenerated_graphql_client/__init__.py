@@ -12,6 +12,10 @@ from ._testing__create_org_unit import TestingCreateOrgUnitOrgUnitCreateCurrent
 from ._testing__create_org_unit import (
     TestingCreateOrgUnitOrgUnitCreateCurrentOrgUnitLevel,
 )
+from ._testing__get_all_managers import TestingGetAllManagers
+from ._testing__get_all_managers import TestingGetAllManagersManagers
+from ._testing__get_all_managers import TestingGetAllManagersManagersObjects
+from ._testing__get_all_managers import TestingGetAllManagersManagersObjectsCurrent
 from ._testing__get_association_type import TestingGetAssociationType
 from ._testing__get_association_type import TestingGetAssociationTypeClasses
 from ._testing__get_association_type import TestingGetAssociationTypeClassesObjects
@@ -66,6 +70,12 @@ from ._testing__get_org_unit_level import TestingGetOrgUnitLevel
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClasses
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClassesObjects
 from ._testing__get_org_unit_level import TestingGetOrgUnitLevelClassesObjectsCurrent
+from ._testing__get_org_unit_manager import TestingGetOrgUnitManager
+from ._testing__get_org_unit_manager import TestingGetOrgUnitManagerManagers
+from ._testing__get_org_unit_manager import TestingGetOrgUnitManagerManagersObjects
+from ._testing__get_org_unit_manager import (
+    TestingGetOrgUnitManagerManagersObjectsCurrent,
+)
 from ._testing__get_org_unit_type import TestingGetOrgUnitType
 from ._testing__get_org_unit_type import TestingGetOrgUnitTypeClasses
 from ._testing__get_org_unit_type import TestingGetOrgUnitTypeClassesObjects
@@ -494,6 +504,10 @@ __all__ = [
     "TestingCreateOrgUnitOrgUnitCreate",
     "TestingCreateOrgUnitOrgUnitCreateCurrent",
     "TestingCreateOrgUnitOrgUnitCreateCurrentOrgUnitLevel",
+    "TestingGetAllManagers",
+    "TestingGetAllManagersManagers",
+    "TestingGetAllManagersManagersObjects",
+    "TestingGetAllManagersManagersObjectsCurrent",
     "TestingGetAssociationType",
     "TestingGetAssociationTypeClasses",
     "TestingGetAssociationTypeClassesObjects",
@@ -528,6 +542,10 @@ __all__ = [
     "TestingGetOrgUnitLevelClasses",
     "TestingGetOrgUnitLevelClassesObjects",
     "TestingGetOrgUnitLevelClassesObjectsCurrent",
+    "TestingGetOrgUnitManager",
+    "TestingGetOrgUnitManagerManagers",
+    "TestingGetOrgUnitManagerManagersObjects",
+    "TestingGetOrgUnitManagerManagersObjectsCurrent",
     "TestingGetOrgUnitType",
     "TestingGetOrgUnitTypeClasses",
     "TestingGetOrgUnitTypeClassesObjects",
