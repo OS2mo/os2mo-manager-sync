@@ -3,7 +3,6 @@
 
 from datetime import datetime
 from datetime import timedelta
-from uuid import UUID
 
 import structlog
 
@@ -16,6 +15,10 @@ from .filters import compute_expected_managers
 from .filters import filter_org_unit_associations
 from .mo import build_manager_mutation
 from .mo import get_leder_org_units
+from .types import AssociationUUID
+from .types import EmployeeUUID
+from .types import ManagerUUID
+from .types import OrgUnitUUID
 
 logger = structlog.get_logger()
 
@@ -34,7 +37,7 @@ async def reconcile_leder_managers(
     logger.info(f"Fetched {len(leder_units)} _leder units")
 
     # Step 2: Reconcile each unit and collect redundant associations
-    associations_to_terminate: list[UUID] = []
+    associations_to_terminate: list[AssociationUUID] = []
     reconciled_units: list[LederOrgUnitsOrgUnitsObjectsValidities] = []
 
     for ou in leder_units:
@@ -47,7 +50,7 @@ async def reconcile_leder_managers(
 
     # Step 4: Fetch all current managers globally
     current_managers_data = await mo.current_managers()
-    current_managers = {
+    current_managers: dict[tuple[OrgUnitUUID, EmployeeUUID | None], ManagerUUID] = {
         (
             manager.current.org_unit_uuid,
             manager.current.employee_uuid,
@@ -57,8 +60,10 @@ async def reconcile_leder_managers(
     }
 
     # Step 5: Compute managers to create and terminate
-    to_create = managers_should_exist - set(current_managers.keys())
-    to_terminate: list[tuple[tuple[UUID, UUID | None], UUID]] = [
+    to_create: set[tuple[OrgUnitUUID, EmployeeUUID | None]] = (
+        managers_should_exist - set(current_managers.keys())
+    )
+    to_terminate: list[tuple[tuple[OrgUnitUUID, EmployeeUUID | None], ManagerUUID]] = [
         (key, manager_uuid)
         for key, manager_uuid in current_managers.items()
         if key not in managers_should_exist
