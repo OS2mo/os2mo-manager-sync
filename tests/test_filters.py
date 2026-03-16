@@ -344,3 +344,111 @@ async def test_compute_expected_managers(
 
     # Assert result is 2 managers for emp1 and 1 for emp2
     assert result == {(department_a_led_adm, emp1), (root, emp1), (department_b, emp2)}
+
+
+@pytest.mark.integration_test
+async def test_filter_same_employee_multiple_associations(
+    test_client: AsyncClient,
+    graphql_client: GraphQLClient,
+) -> None:
+    """
+    Regression test: when the same employee has multiple open-ended associations
+    (all with to=None), the one with the newest 'from' date should win.
+
+    Scenario:
+        Department Y
+        └── Team Y_leder
+                ├── association 1 → emp1 (from=90 days ago, to=None)
+                └── association 2 → emp1 (from=10 days ago, to=None)  ← should win
+
+    Expected: assoc with latest from date is kept, the other is terminated.
+    """
+
+    org_unit_type_uuid = (
+        (await graphql_client._testing__get_org_unit_type()).objects[0].uuid
+    )
+
+    department_y = (
+        await graphql_client._testing__create_org_unit(
+            name="Department Y",
+            parent=None,
+            org_unit_type=org_unit_type_uuid,
+        )
+    ).uuid
+
+    team_y_leder = (
+        await graphql_client._testing__create_org_unit(
+            name="Team Y_leder",
+            parent=department_y,
+            org_unit_type=org_unit_type_uuid,
+        )
+    ).uuid
+
+    emp1 = (await graphql_client._testing__create_employee("Emp", "Tiebreak")).uuid
+
+    assoc_type_uuid = (
+        (await graphql_client._testing__get_association_type()).objects[0].uuid
+    )
+
+    now = datetime.now()
+
+    # One with an end date, one open-ended (to=None), and one open-ended with newer from.
+    # The open-ended with the newest from date should win.
+    assoc_with_end = (
+        await graphql_client._testing__create_association(
+            team_y_leder,
+            emp1,
+            assoc_type_uuid,
+            from_=(now - timedelta(days=90)),
+            to=(now + timedelta(days=365)),
+        )
+    ).uuid
+    assoc_open_old_from = (
+        await graphql_client._testing__create_association(
+            team_y_leder,
+            emp1,
+            assoc_type_uuid,
+            from_=(now - timedelta(days=60)),
+        )
+    ).uuid
+    assoc_open_new_from = (
+        await graphql_client._testing__create_association(
+            team_y_leder,
+            emp1,
+            assoc_type_uuid,
+            from_=(now - timedelta(days=10)),
+        )
+    ).uuid
+
+    engagement_type = (
+        (await graphql_client._testing__get_engagement_type()).objects[0].uuid
+    )
+    job_function = (
+        (await graphql_client._testing__get_job_function())
+        .objects[0]
+        .current.classes[0]  # type: ignore
+    )
+
+    await graphql_client._testing__create_engagement(
+        department_y,
+        emp1,
+        engagement_type,
+        job_function.uuid,
+    )
+
+    data = await graphql_client._testing__get_leder_org_unit_associations(team_y_leder)
+    org_unit = one(one(data.objects).validities)
+
+    # This should NOT raise ConflictingManagers
+    reconciled_unit, to_terminate = await filter_org_unit_associations(
+        graphql_client,
+        org_unit,  # type: ignore
+    )
+
+    # The open-ended association with the newest from date should win:
+    # 1. open-ended (to=None) beats having an end date
+    # 2. newest from date breaks the tie between the two open-ended ones
+    assert len(reconciled_unit.associations) == 1
+    assert len(to_terminate) == 2
+    assert reconciled_unit.associations[0].uuid == assoc_open_new_from
+    assert set(to_terminate) == {assoc_with_end, assoc_open_old_from}

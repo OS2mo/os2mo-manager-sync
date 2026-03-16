@@ -95,19 +95,29 @@ async def pick_latest_valid_association(
     parent_uuid = org_unit.parent.uuid
     associations = org_unit.associations
 
-    # Fetch latest engagement dates for all associations, since the person with this engagement should be the manager
+    # Pick the newest association per employee
+    newest_per_employee: dict[
+        EmployeeUUID, LederOrgUnitsOrgUnitsObjectsValiditiesAssociations
+    ] = {}
+    for assoc in associations:
+        if not assoc.employee_uuid:
+            continue
+        existing = newest_per_employee.get(assoc.employee_uuid)
+        if existing is None or _is_newer_association(assoc, existing):
+            newest_per_employee[assoc.employee_uuid] = assoc
+
+    # Fetch latest engagement date per employee
     engagement_dates = await asyncio.gather(
         *[
-            get_latest_parent_engagement_from(mo, assoc.employee_uuid, parent_uuid)
-            for assoc in associations
-            if assoc.employee_uuid
+            get_latest_parent_engagement_from(mo, employee_uuid, parent_uuid)
+            for employee_uuid in newest_per_employee
         ]
     )
 
-    # Pair associations with their engagement date
+    # Pair each employee's best association with their engagement date
     valid_pairs = [
         (assoc, dt)
-        for assoc, dt in zip(associations, engagement_dates)
+        for assoc, dt in zip(newest_per_employee.values(), engagement_dates)
         if dt is not None
     ]
 
@@ -116,15 +126,37 @@ async def pick_latest_valid_association(
 
     # Find the latest engagement date
     latest_date = max(dt for _, dt in valid_pairs)
-    # TODO: Rename
-    winners = [assoc for assoc, dt in valid_pairs if dt == latest_date]
+    candidates = [assoc for assoc, dt in valid_pairs if dt == latest_date]
 
-    if len(winners) > 1:
+    if len(candidates) > 1:
         raise ConflictingManagers(
             f"Multiple employees share latest engagement date in _leder {org_unit.uuid}"
         )
 
-    return one(winners)
+    return one(candidates)
+
+
+def _is_newer_association(
+    a: LederOrgUnitsOrgUnitsObjectsValiditiesAssociations,
+    b: LederOrgUnitsOrgUnitsObjectsValiditiesAssociations,
+) -> bool:
+    """Return True if association `a` is newer than `b`.
+
+    Prefers open-ended (no end date) over finite end dates,
+    then latest end date, then latest from date as tiebreaker.
+    """
+    # Open-ended beats having an end date
+    if a.validity.to is None and b.validity.to is not None:
+        return True
+    if a.validity.to is not None and b.validity.to is None:
+        return False
+
+    # Both have end dates (or both are open-ended) — compare them
+    if a.validity.to != b.validity.to:
+        return a.validity.to > b.validity.to  # type: ignore
+
+    # Same end date — newest from date wins
+    return a.validity.from_ > b.validity.from_
 
 
 async def get_latest_parent_engagement_from(
