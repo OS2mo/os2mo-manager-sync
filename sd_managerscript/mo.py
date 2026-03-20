@@ -26,12 +26,13 @@ logger = structlog.get_logger()
 
 async def get_leder_org_units(
     mo: GraphQLClient,
+    from_date: datetime,
 ) -> list[LederOrgUnitsOrgUnitsObjectsValidities]:
     """
     Fetch all _leder org units with associations and convert them into LederOrgUnitsOrgUnitsObjectsValidities models.
     """
 
-    data = await mo.leder_org_units()
+    data = await mo.leder_org_units(from_date=from_date)
 
     return [
         validity
