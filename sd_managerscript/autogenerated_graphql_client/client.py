@@ -159,16 +159,16 @@ class GraphQLClient(AsyncBaseClient):
         data = self.get_data(response)
         return ManagerEngagements.parse_obj(data).org_units
 
-    async def leder_org_units(self) -> LederOrgUnitsOrgUnits:
+    async def leder_org_units(self, from_date: datetime) -> LederOrgUnitsOrgUnits:
         query = gql(
             """
-            query LederOrgUnits {
+            query LederOrgUnits($from_date: DateTime!) {
               org_units(filter: {query: "_leder"}) {
                 objects {
                   validities {
                     uuid
                     name
-                    associations {
+                    associations(filter: {from_date: $from_date}) {
                       uuid
                       employee_uuid
                       org_unit_uuid
@@ -190,7 +190,7 @@ class GraphQLClient(AsyncBaseClient):
             }
             """
         )
-        variables: dict[str, object] = {}
+        variables: dict[str, object] = {"from_date": from_date}
         response = await self.execute(query=query, variables=variables)
         data = self.get_data(response)
         return LederOrgUnits.parse_obj(data).org_units
@@ -629,7 +629,7 @@ class GraphQLClient(AsyncBaseClient):
             """
             mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
               org_unit_create(
-                input: {name: $name, parent: $parent, org_unit_type: $org_unit_type, org_unit_level: $org_unit_level, validity: {from: "2010-02-03"}}
+                input: {name: $name, parent: $parent, org_unit_type: $org_unit_type, org_unit_level: $org_unit_level, validity: {from: "2010-01-01"}}
               ) {
                 uuid
                 current {
