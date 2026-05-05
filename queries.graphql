@@ -1,0 +1,391 @@
+# SPDX-FileCopyrightText: Magenta ApS <https://magenta.dk>
+# SPDX-License-Identifier: MPL-2.0
+
+query RootManagerEngagements($uuid: UUID!){
+    org_units (filter: { uuids: [$uuid] }){
+        objects {
+            validities {
+                uuid
+                has_children
+                managers {
+                    uuid
+                    employee {
+                        engagements {
+                            org_unit {
+                                name
+                                uuid
+                                parent {
+                                    name
+                                    uuid
+                                }
+                            }
+                            validity {
+                                from
+                                to
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query ManagerEngagements($uuid: UUID!){
+    org_units (filter: { parent: { uuids: [$uuid] } }){
+        objects {
+            validities {
+                uuid
+                has_children
+                managers{
+                    uuid
+                    employee {
+                        engagements {
+                            org_unit {
+                                name
+                                uuid
+                                parent {
+                                    name
+                                    uuid
+                                }
+                            }
+                            validity {
+                                from
+                                to
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query LederOrgUnits($from_date: DateTime!) {
+    org_units(filter: { query: "_leder" }) {
+        objects {
+            validities {
+                uuid
+                name
+                associations(filter: { from_date: $from_date }) {
+                    uuid
+                    employee_uuid
+                    org_unit_uuid
+                    association_type_uuid
+                    validity {
+                        from
+                        to
+                    }
+                }
+                parent {
+                    uuid
+                    name
+                    parent_uuid
+                    org_unit_level_uuid
+                }
+            }
+        }
+    }
+}
+
+query Engagements($uuid: UUID!){
+    engagements (filter: { employee: { uuids: [$uuid], from_date: null, to_date: null }} ){
+        objects {
+            validities {
+                org_unit_uuid
+                validity{
+                    from
+                    to
+                }
+            }
+        }
+    }
+}
+
+query CurrentManagers{
+    managers {
+        objects {
+            current {
+                uuid
+                employee_uuid
+                org_unit_uuid
+            }
+        }
+    }
+}
+
+query OrgUnitLevel($uuids: UUID!) {
+    org_units (filter: {uuids: [$uuids]}) {
+        objects {
+            validities {
+                uuid
+                name
+                org_unit_level {
+                    user_key
+                }
+                parent {
+                    uuid
+                    org_unit_level {
+                        user_key
+                    }
+                }
+            }
+        }
+    }
+}
+
+query ManagerLevel($user_key: String!) {
+    classes(filter: { user_keys: [$user_key] }) {
+        objects {
+            validities {
+                uuid
+            }
+        }
+    }
+}
+
+mutation CreateManager($input: ManagerCreateInput!) {
+    manager_create(input: $input) {
+        uuid
+    }
+}
+
+mutation CreateManagers($input: [ManagerCreateInput!]!) {
+    managers_create(input: $input) {
+        uuid
+    }
+}
+
+mutation UpdateManager($input: ManagerUpdateInput!) {
+    manager_update(input: $input) {
+        uuid
+    }
+}
+
+mutation TerminateManager($input: ManagerTerminateInput!){
+    manager_terminate(input: $input){
+        uuid
+    }
+}
+
+mutation TerminateAssociation($input: AssociationTerminateInput!){
+    association_terminate(input: $input){
+        uuid
+    }
+}
+
+query _Testing_GetOrgUnitType {
+  classes(filter: {facet_user_keys: "org_unit_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetOrgUnitLevel {
+  classes(filter: {facet_user_keys: "org_unit_level"}) {
+    objects {
+      uuid
+      current {
+        user_key
+      }
+    }
+  }
+}
+
+query _Testing_GetAssociationType {
+  classes(filter: {facet_user_keys: "association_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetEngagementType {
+  classes(filter: {facet_user_keys: "engagement_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetManagerLevel {
+  classes(filter: {facet_user_keys: "manager_level"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetManagerLevelByUserKey($user_key: String!) {
+  classes(filter: {user_keys: [$user_key], facet_user_keys: "manager_level"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetManagerType {
+  classes(filter: {facet_user_keys: "manager_type"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetManagerResponsibility {
+  classes(filter: {facet_user_keys: "responsibility"}) {
+    objects {
+      uuid
+    }
+  }
+}
+
+query _Testing_GetJobFunction {
+  facets(filter: {user_keys: "engagement_job_function"}) {
+    objects {
+      current {
+        classes {
+          uuid
+          user_key
+        }
+      }
+    }
+  }
+}
+
+query _Testing_GetLederOrgUnitAssociations($uuid: UUID!) {
+    org_units(filter: { uuids: [$uuid] }) {
+        objects {
+            validities {
+                uuid
+                name
+                associations {
+                    uuid
+                    employee_uuid
+                    org_unit_uuid
+                    association_type_uuid
+                    validity {
+                        from
+                        to
+                    }
+                }
+                parent {
+                    uuid
+                    name
+                    parent_uuid
+                    org_unit_level_uuid
+                }
+            }
+        }
+    }
+}
+
+query _Testing_GetOrgUnitManager($uuid: UUID!) {
+  managers(filter: {org_unit: {uuids: [$uuid]}}) {
+    objects {
+      current {
+        org_unit_uuid
+        employee_uuid
+      }
+    }
+  }
+}
+
+query _Testing_GetAllManagers {
+  managers {
+    objects {
+      current {
+        uuid
+      }
+    }
+  }
+}
+
+mutation _Testing_CreateOrgUnit($name: String!, $parent: UUID, $org_unit_type: UUID!, $org_unit_level: UUID) {
+  org_unit_create(
+    input: {
+      name: $name,
+      parent: $parent,
+      org_unit_type: $org_unit_type,
+      org_unit_level: $org_unit_level,
+      validity: {from: "2010-01-01"},
+    },
+  ) {
+    uuid
+    current {
+      org_unit_level {
+        user_key
+      }
+    }
+  }
+}
+
+mutation _Testing_CreateEmployee($first_name: String!, $last_name: String!) {
+  employee_create(input: {given_name: $first_name, surname: $last_name}) {
+    uuid
+  }
+}
+
+mutation _Testing_CreateAssociation(
+  $org_unit: UUID!
+  $person: UUID!
+  $association_type: UUID!
+  $from: DateTime = "2016-05-05"
+  $to: DateTime = null
+) {
+  association_create(
+    input: {
+      org_unit: $org_unit
+      association_type: $association_type
+      person: $person
+      validity: { from: $from, to: $to }
+    }
+  ) {
+    uuid
+  }
+}
+
+mutation _Testing_CreateEngagement(
+  $orgunit: UUID!
+  $person: UUID!
+  $engagement_type: UUID!
+  $job_function: UUID!
+  $from: DateTime = "2016-05-05"
+  $to: DateTime = null
+) {
+  engagement_create(
+    input: {
+      org_unit: $orgunit
+      engagement_type: $engagement_type
+      job_function: $job_function
+      person: $person
+      validity: { from: $from, to: $to }
+    }
+  ) {
+    uuid
+  }
+}
+
+mutation _Testing_CreateManager(
+  $orgunit: UUID!
+  $person: UUID!
+  $manager_level: UUID!
+  $manager_type: UUID!
+  $responsibility: UUID!
+  $from: DateTime = "2016-05-05"
+  $to: DateTime = null
+) {
+  manager_create(
+    input: {
+      org_unit: $orgunit
+      manager_level: $manager_level
+      manager_type: $manager_type
+      responsibility: [$responsibility]
+      person: $person
+      validity: { from: $from, to: $to }
+    }
+  ) {
+    uuid
+  }
+}

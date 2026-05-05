@@ -1,79 +1,63 @@
-# SPDX-FileCopyrightText: 2022 Magenta ApS <https://magenta.dk>
+# SPDX-FileCopyrightText: Magenta ApS <https://magenta.dk>
 # SPDX-License-Identifier: MPL-2.0
-default_language_version:
-  python: python3.11
 
 repos:
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.8.0
-    hooks:
-      - id: pyupgrade
-        args: [ "--py310-plus" ]
-
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
-
-  - repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.10.0
-    hooks:
-      - id: reorder-python-imports
-        args: [ "--application-directories=.:backend:tests" ]
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-      - id: flake8
-        args: [ "--extend-ignore=B008,W503,E203", "--max-line-length=101" ]
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.4.1
-    hooks:
-      - id: mypy
-        args: [ --config-file=pyproject.toml ]
-        additional_dependencies:
-          - aiohttp
-          - fastapi
-          - httpx
-          - os2mo_dar_client==1.0.1
-          - pydantic==1.10.11
-          - starlette_context
-          - strawberry-graphql
-          - structlog
-          - prometheus_client
-          - types-python-dateutil
-          - pytest
-
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.5.1
-    hooks:
-      - id: prettier
-        files: \.(js|vue|css|html)$
-
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.1.1
-    hooks:
-      - id: pydocstyle
-        files: backend/mora/graphapi/
-        args: [ "--convention=google", "--add-ignore=D1" ]
-        additional_dependencies:
-          - toml
-
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v1.0.0
+    rev: v5.0.2
     hooks:
       - id: reuse
 
   - repo: https://github.com/pre-commit/pre-commit-hooks.git
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
+      - id: check-merge-conflict
+      - id: check-toml
       - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+        args: ["--fix", "lf"]
       - id: trailing-whitespace
 
-  - repo: https://github.com/dosisod/refurb
-    rev: v1.17.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.6
     hooks:
-      - id: refurb
+      - id: ruff
+        args: [--fix]
+        language: system
+      - id: ruff-format
+        language: system
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        args: [--config-file=pyproject.toml]
+        language: system
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1 # Use latest version when adding
+    hooks:
+      - id: pyupgrade
+        args: ["--py311-plus"]
+        language: system
+
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0 # Use latest version when adding
+    hooks:
+      - id: pydocstyle
+        files: backend/mora/graphapi/
+        args: ["--convention=google", "--add-ignore=D1"]
         additional_dependencies:
-          - mypy<1.7 # SEE: https://github.com/dosisod/refurb/issues/305
+          - toml
+
+  - repo: https://github.com/fpgmaas/deptry.git
+    rev: 0.23.0
+    hooks:
+      - id: deptry
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.2.2
+    hooks:
+      - id: commitizen
+      - id: commitizen-branch
+        stages: [pre-push]

@@ -2,68 +2,56 @@
 #
 # SPDX-License-Identifier: MPL-2.0
 
-version: "3.10"
 services:
   sd_managerscript:
-    build: .
-    command:
-      [
-        "uvicorn",
-        "--factory",
-        "app.main:create_app",
-        "--host",
-        "0.0.0.0",
-        "--reload"
-      ]
+    build:
+      context: .
     environment:
+      FASTRAMQPI__LOG_LEVEL: "INFO"
+      FASTRAMQPI__JSON_LOGS: "true"
 
-      AUTH_SERVER: "http://keycloak:8080/auth"
+      # OS2mo
+      FASTRAMQPI__MO_URL: "http://mo:5000"
+      FASTRAMQPI__CLIENT_ID: "dipex"
+      FASTRAMQPI__CLIENT_SECRET: "603f1c82-d012-4d04-9382-dbe659c533fb"
+      FASTRAMQPI__AUTH_SERVER: "http://keycloak:8080/auth"
+      FASTRAMQPI__AMQP__URL: "amqp://guest:guest@msg-broker:5672/"
+      FASTRAMQPI__AUTH_REALM: "mo"
+      FASTRAMQPI__DATABASE__USER: "fastramqpi"
+      FASTRAMQPI__DATABASE__PASSWORD: "fastramqpi"
+      FASTRAMQPI__DATABASE__HOST: "db"
+      FASTRAMQPI__DATABASE__NAME: "fastramqpi"
 
-      MO_URL: "http://mo:5000"
-      CLIENT_ID: "dipex"
-      CLIENT_SECRET: "603f1c82-d012-4d04-9382-dbe659c533fb"
+      # Manager sync
       ROOT_UUID: "f06ee470-9f17-566f-acbe-e938112d46d9"
       MANAGER_TYPE_UUID: "83b47e9e-de81-432e-bf0b-4ad95cd18589"
       RESPONSIBILITY_UUID: "82188ee7-a5da-4f3c-bf52-434d9ce57a65"
       MANAGER_LEVEL_MAPPING: '{
-        "84f95e29-48a0-4175-85fd-84a1f596e1a4": "97ab3d21-4b9d-420c-b738-fde6a56ffb45",
-        "abbbefb2-85a6-4a5d-ad94-98a363adfee6": "d09ba017-f838-4742-b57e-44c2f5437e38",
-        "c553d5fd-0768-4907-9d34-14757c87454c": "f0a18e70-dcd1-4c42-9cb3-f9602fb25a69",
-        "f9da8228-69e7-4f31-8194-13d8bdbc2229": "9a2bbe63-b7b4-4b3d-9b47-9d7dd391b42c",
-        "d4c6fb4a-233f-4b85-a77a-6dcdb13ee0db": "9ffaff0f-8b6e-6e99-a517-f841a04c61c2",
-        "ff23ab25-ba89-432c-a689-e0824f66ee1e": "a8754726-a4b9-1715-6b41-769c6fe703c5",
-        "53350314-820e-4bcc-a286-b0c1bb7738e9": "e226821b-4af3-1e91-c53f-ea5c57c6d8d0",
-        "418b313a-979f-4a26-807e-ba8dd3114d74": "b352fff5-c6ef-4efa-b9fc-7e738bee6b9f"
+        "N1": "Niveau 1",
+        "N2": "Niveau 2",
+        "N3": "Niveau 3",
+        "N4": "Niveau 4",
+        "N5": "Niveau 4",
+        "N6": "Niveau 4",
+        "N7": "Niveau 4",
+        "N8": "Niveau 4"
       }'
-      MANAGER_LEVEL_CREATE: '[
-            {
-                "uuid": "b352fff5-c6ef-4efa-b9fc-7e738bee6b9f",
-                "name": "Kommunal Direktør",
-                "user_key": "manager_municipality_director"
-            },
-            {
-                "uuid": "e226821b-4af3-1e91-c53f-ea5c57c6d8d0",
-                "name": "Direktør",
-                "user_key": "manager_1030"
-            },
-            {
-                "uuid": "a8754726-a4b9-1715-6b41-769c6fe703c5",
-                "name": "Chef",
-                "user_key": "manager_1035"
-            },
-            {
-                "uuid": "9ffaff0f-8b6e-6e99-a517-f841a04c61c2",
-                "name": "Leder",
-                "user_key": "manager_1040"
-            }
-        ]'
-      LOG_LEVEL: DEBUG
+    ports:
+      - "127.0.0.1:8000:8000"
+    networks:
+      - default
+      - os2mo_default
+    volumes:
+      - ./:/app/:ro
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: "fastramqpi"
+      POSTGRES_PASSWORD: "fastramqpi"
+      POSTGRES_DB: "fastramqpi"
     networks:
       - os2mo_default
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./sd_managerscript:/opt/app/
 
 networks:
   os2mo_default:
